@@ -18,6 +18,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
+
+        /* Background foto gedung sekolah khusus halaman login */
+        .login-background {
+            background-image:
+                linear-gradient(rgba(7, 20, 48, 0.58), rgba(7, 20, 48, 0.68)),
+                url('https://www.image2url.com/r2/default/images/1792575541785-ff6595db-2380-4d38-82d7-c4f4efcb29d6.png');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        @media (max-width: 640px) {
+            .login-background {
+                background-attachment: scroll;
+                background-position: center;
+            }
+        }
         @page {
             size: A4 portrait;
             margin: 10mm;
@@ -87,7 +104,7 @@
 
     <!-- 1. HALAMAN LOGIN -->
     <template x-if="!currentUser">
-        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 p-4 w-full relative">
+        <div class="login-background min-h-screen flex items-center justify-center p-4 w-full relative">
             <div class="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-md w-full border border-white/20">
                 <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-center text-white relative">
                     <img :src="sekolah.logo || 'https://smpittrisuksesdepok.sch.id/wp-content/uploads/2025/08/cropped-SMP-IT-TRI-SUKSES-400px.png'" alt="Logo" class="w-20 h-20 mx-auto" onerror="this.src='https://placehold.co/100x100/3b82f6/ffffff?text=LOGO'">
@@ -149,7 +166,7 @@
 
     <!-- 2. APLIKASI UTAMA -->
     <template x-if="currentUser">
-        <div class="min-h-screen flex flex-col">
+        <div class="min-h-screen w-full flex flex-col">
             <!-- HEADER APLIKASI -->
             <header class="bg-gradient-to-r from-blue-800 to-indigo-900 text-white shadow-md no-print">
                 <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
@@ -182,6 +199,9 @@
                             </div>
                             <div class="text-white text-[11px] font-bold" x-text="currentUser.role === 'admin' ? 'Administrator Utama' : (currentUser.role === 'kelas' ? 'Akun Kelas ' + currentUser.kelasAkses : currentUser.mapel)"></div>
                         </div>
+                        <button @click="toggleFullscreen()" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg shadow-sm transition-all text-xs" title="Aktifkan / Keluar Fullscreen" aria-label="Aktifkan atau keluar dari fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
                         <button @click="handleLogout()" class="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg shadow-sm transition-all text-xs" title="Keluar / Logout">
                             <i class="fas fa-power-off"></i>
                         </button>
@@ -1937,6 +1957,12 @@ function saveToSheet(ss, sheetName, dataArray) {
                         }
                     }
 
+                    // Masuk ke mode fullscreen setelah login berhasil.
+                    // Browser dapat menolak permintaan ini; aplikasi tetap berjalan normal.
+                    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(() => {});
+                    }
+
                     sessionStorage.setItem('adm_user', JSON.stringify(this.currentUser));
                     this.loginForm = { username: '', password: '' };
                     this.activeTab = 'dashboard';
@@ -1947,6 +1973,20 @@ function saveToSheet(ss, sheetName, dataArray) {
                         this.renderCharts();
                         this.renderChartRekap();
                     });
+                },
+
+                async toggleFullscreen() {
+                    try {
+                        if (!document.fullscreenElement) {
+                            if (document.documentElement.requestFullscreen) {
+                                await document.documentElement.requestFullscreen();
+                            }
+                        } else if (document.exitFullscreen) {
+                            await document.exitFullscreen();
+                        }
+                    } catch (error) {
+                        console.warn('Mode fullscreen tidak dapat diubah:', error);
+                    }
                 },
 
                 handleLogout() {
