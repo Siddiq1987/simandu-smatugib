@@ -2423,7 +2423,7 @@ function saveToSheet(ss, sheetName, dataArray) {
                             count++;
                         }
                     });
-                    row.rataRata = count > 0 ? (total / count).toFixed(1) : 0;
+                    row.rataRata = count > 0 ? (total / count).toFixed(2) : "0.00";
                 },
 
                 savePenilaian() {
