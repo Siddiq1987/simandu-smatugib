@@ -2657,10 +2657,10 @@ function saveToSheet(ss, sheetName, dataArray) {
                         type: 'doughnut',
                         data: {
                             labels: [
-                                `Hadir (H),
-                                `Izin (I),
-                                `Sakit (S),
-                                `Alpa (A)`
+                                `Hadir (H): ${totalH} Siswa`,
+                                `Izin (I): ${totalI} Siswa`,
+                                `Sakit (S): ${totalS} Siswa`,
+                                `Alpa (A): ${totalA} Siswa`
                             ],
                             datasets: [{
                                 data: [totalH, totalI, totalS, totalA],
